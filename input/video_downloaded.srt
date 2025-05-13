@@ -1,0 +1,24 @@
+1
+00:00:00,000 --> 00:00:07,520
+People often think of artificial intelligence as a technical problem.
+
+2
+00:00:07,520 --> 00:00:09,839
+What can we get the machines to do?
+
+3
+00:00:09,839 --> 00:00:15,080
+But the perspective we'll take in this course is that all uses of computers occur in the
+
+4
+00:00:15,080 --> 00:00:21,920
+contexts of people and that what we really need to do is design and optimize human computer
+
+5
+00:00:21,920 --> 00:00:25,879
+systems, not just technical systems alone.
+
+6
+00:00:25,879 --> 00:00:30,519
+So we'll give students a sense of and an understanding of how to do that better.
+
