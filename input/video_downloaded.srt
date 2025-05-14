@@ -1,24 +1,64 @@
 1
-00:00:00,000 --> 00:00:07,520
-People often think of artificial intelligence as a technical problem.
+00:00:00,000 --> 00:00:29,920
+Love and can hurt, Love and can hurt sometimes, but it's the only thing that
 
 2
-00:00:07,520 --> 00:00:09,839
-What can we get the machines to do?
+00:00:29,920 --> 00:00:53,920
+I know, when it gets hard, you know it can get hard sometimes, it is the only thing that makes us feel alive.
 
 3
-00:00:09,839 --> 00:00:15,080
-But the perspective we'll take in this course is that all uses of computers occur in the
+00:00:53,920 --> 00:01:09,920
+We keep this love in a photograph, we make these memories for ourselves, where our eyes are never closing, hearts are never broken, times forever frozen still.
 
 4
-00:00:15,080 --> 00:00:21,920
-contexts of people and that what we really need to do is design and optimize human computer
+00:01:09,920 --> 00:01:25,920
+So you can keep me inside the pocket of your ripped jeans, holding me close until I made you won't ever be alone.
 
 5
-00:00:21,920 --> 00:00:25,879
-systems, not just technical systems alone.
+00:01:25,920 --> 00:01:49,920
+Wait for me to come home. Love and can heal, Love and can mend your soul, and it's the only thing that I know, know.
 
 6
-00:00:25,879 --> 00:00:30,519
-So we'll give students a sense of and an understanding of how to do that better.
+00:01:49,920 --> 00:02:09,920
+I swear it will get easier, remember that I put every piece of work in it, and it's the only thing we take with us when we die.
+
+7
+00:02:09,919 --> 00:02:25,919
+We keep this love in a photograph, we make these memories for ourselves, where our eyes are never closing, hearts are never broken, times forever frozen still.
+
+8
+00:02:26,919 --> 00:02:43,919
+So you can keep me inside the pocket of your ripped jeans, holding me close until I made you won't ever be alone.
+
+9
+00:02:44,919 --> 00:02:59,919
+And what you hurt me, that's okay baby, only words complete, inside these pages you just hold me, no one ever let you burn.
+
+10
+00:02:59,919 --> 00:03:11,919
+Wait for me to come home.
+
+11
+00:03:11,919 --> 00:03:19,919
+Wait for me to come home.
+
+12
+00:03:19,919 --> 00:03:37,919
+We can fit, we inside the pocket of your ripped jeans, holding me close until I made you won't ever be alone.
+
+13
+00:03:37,919 --> 00:03:55,919
+And what you hurt me, that's okay baby, only words complete, inside these pages you just hold me, no one ever let you burn.
+
+14
+00:03:55,919 --> 00:04:10,919
+And I'll remember how you kissed me, under the lamppost back on 6th street, hearing you whisper through the phone.
+
+15
+00:04:10,919 --> 00:04:11,919
+You're at the top of the mountain.
+
+16
+00:04:11,919 --> 00:04:21,919
+Wait for me to come home.
 
