@@ -5,9 +5,11 @@ import whisper
 import argostranslate.package
 import argostranslate.translate
 
-INPUT_DIR = "input"
-OUTPUT_DIR = "output"
-FONT_NAME = "NotoSansThai-SemiBold"  # Ensure this TTF file is installed in Docker
+# === [0] CONFIG ===
+INPUT_DIR = os.getenv("INPUT_DIR", "input")
+OUTPUT_DIR = os.getenv("OUTPUT_DIR", "output")
+FONT_NAME = os.getenv("FONT_NAME", "NotoSansThai-SemiBold")
+WHISPER_MODEL = os.getenv("WHISPER_MODEL", "base")
 
 os.makedirs(INPUT_DIR, exist_ok=True)
 os.makedirs(OUTPUT_DIR, exist_ok=True)
@@ -26,9 +28,8 @@ video_path = os.path.join(INPUT_DIR, video_filename)
 subprocess.run(["yt-dlp", "-f", "mp4", YOUTUBE_URL, "-o", video_path], check=True)
 
 # === [3] Load Whisper Model ===
-model_size = os.getenv("WHISPER_MODEL", "base")
-print(f"🧠 Loading Whisper Model: {model_size}")
-model = whisper.load_model(model_size)
+print(f"🧠 Loading Whisper Model: {WHISPER_MODEL}")
+model = whisper.load_model(WHISPER_MODEL)
 
 # === [4] Transcribe audio ===
 print("🔊 Transcribing audio...")
@@ -38,24 +39,43 @@ segments = result["segments"]
 srt_path = os.path.join(INPUT_DIR, "video_downloaded.srt")
 srt_th_path = os.path.join(INPUT_DIR, "video_downloaded_th.srt")
 
-# === [5] Translate EN → TH ===
-def translate_to_thai(text: str) -> str:
-    try:
-        available_packages = argostranslate.package.get_available_packages()
-        package_to_install = next((p for p in available_packages if p.from_code == "en" and p.to_code == "th"), None)
-        if package_to_install:
-            download_path = package_to_install.download()
-            argostranslate.package.install_from_path(download_path)
+# === [5] Load Argos Translate (once) ===
+from_lang = None
+to_lang = None
+translator = None
 
-        installed_languages = argostranslate.translate.get_installed_languages()
-        from_lang = next((l for l in installed_languages if l.code == "en"), None)
-        to_lang = next((l for l in installed_languages if l.code == "th"), None)
-        if from_lang and to_lang:
-            translation = from_lang.get_translation(to_lang)
-            return translation.translate(text)
+try:
+    installed_languages = argostranslate.translate.get_installed_languages()
+    from_lang = next((l for l in installed_languages if l.code == "en"), None)
+    to_lang = next((l for l in installed_languages if l.code == "th"), None)
+
+    if not from_lang or not to_lang:
+        print("⬇️  Installing Argos EN→TH...")
+        available_packages = argostranslate.package.get_available_packages()
+        package = next((p for p in available_packages if p.from_code == "en" and p.to_code == "th"), None)
+        if package:
+            download_path = package.download()
+            argostranslate.package.install_from_path(download_path)
+            installed_languages = argostranslate.translate.get_installed_languages()
+            from_lang = next((l for l in installed_languages if l.code == "en"), None)
+            to_lang = next((l for l in installed_languages if l.code == "th"), None)
+
+    if from_lang and to_lang:
+        translator = from_lang.get_translation(to_lang)
+
+except Exception as e:
+    print(f"❌ Failed to load Argos Translate: {e}")
+    translator = None
+
+# === [5.2] Translate EN → TH ===
+def translate_to_thai(text: str) -> str:
+    if not translator:
+        return text
+    try:
+        return translator.translate(text)
     except Exception as e:
         print(f"⚠️ Translation failed: {text} → {e}")
-    return text
+        return text
 
 # === [6] Save SRT files ===
 def format_time(t):
@@ -75,7 +95,17 @@ with open(srt_path, "w", encoding="utf-8") as f_en, open(srt_th_path, "w", encod
         f_en.write(f"{i}\n{format_time(start)} --> {format_time(end)}\n{text_en}\n\n")
         f_th.write(f"{i}\n{format_time(start)} --> {format_time(end)}\n{text_th}\n\n")
 
-# === [7] Convert SRT to styled ASS ===
+# === [7] Sync SRT timing using ffsubsync ===
+synced_srt_path = os.path.join(INPUT_DIR, "synced_th.srt")
+print("🕐 Syncing subtitle timing using ffsubsync...")
+subprocess.run([
+    "ffsubsync", video_path,
+    "-i", srt_th_path,
+    "-o", synced_srt_path,
+    "--overwrite"
+], check=True)
+
+# === [8] Convert synced SRT to styled ASS ===
 def write_ass_with_style(srt_input_path, ass_output_path, font_name):
     with open(srt_input_path, 'r', encoding='utf-8') as f:
         srt_lines = f.readlines()
@@ -91,7 +121,7 @@ def write_ass_with_style(srt_input_path, ass_output_path, font_name):
         f.write("Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, "
                 "Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, "
                 "Alignment, MarginL, MarginR, MarginV, Encoding\n")
-        f.write(f"Style: Default,{font_name},42,&H00FFFFFF,&H000000FF,&H00000000,&H64000000," \
+        f.write(f"Style: Default,{font_name},42,&H00FFFFFF,&H000000FF,&H00000000,&H64000000,"
                 "0,0,0,0,100,100,0,0,1,2,1,2,30,30,20,1\n\n")
 
         f.write("[Events]\n")
@@ -111,9 +141,9 @@ def write_ass_with_style(srt_input_path, ass_output_path, font_name):
 
 ass_path = os.path.join(INPUT_DIR, "video_downloaded_th.ass")
 print("📝 Generating styled ASS subtitle...")
-write_ass_with_style(srt_th_path, ass_path, FONT_NAME)
+write_ass_with_style(synced_srt_path, ass_path, FONT_NAME)
 
-# === [8] Burn subtitle into video ===
+# === [9] Burn subtitle into video ===
 output_path = os.path.join(OUTPUT_DIR, "video_withsub.mp4")
 print("🔥 Embedding subtitle into video")
 subprocess.run([
@@ -123,5 +153,9 @@ subprocess.run([
     "-c:a", "copy",
     output_path
 ], check=True)
+
+if not os.path.exists(output_path):
+    print("❌ Output video not created.")
+    sys.exit(1)
 
 print(f"\n✅ Done! Output video: {output_path}")

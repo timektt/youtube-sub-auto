@@ -1,0 +1,7 @@
+# requirements.txt
+
+git+https://github.com/openai/whisper.git
+argostranslate
+ffmpeg-python
+yt-dlp
+ffsubsync
